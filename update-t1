@@ -1,0 +1,227 @@
+import React, { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Check, X } from 'lucide-react';
+
+const InteractiveQuiz = () => {
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [showScore, setShowScore] = useState(false);
+  const [isAnswered, setIsAnswered] = useState({});
+
+  const calculateScore = () => {
+    let score = 0;
+    questions.forEach((q, idx) => {
+      if (selectedAnswers[idx] === q.correctAnswer) {
+        score++;
+      }
+    });
+    return score;
+  };
+
+  const handleOptionSelect = (questionIdx, option) => {
+    if (!isAnswered[questionIdx]) {
+      setSelectedAnswers({
+        ...selectedAnswers,
+        [questionIdx]: option
+      });
+      setIsAnswered({
+        ...isAnswered,
+        [questionIdx]: true
+      });
+    }
+  };
+
+  const handleSubmit = () => {
+    if (Object.keys(selectedAnswers).length === questions.length) {
+      setShowScore(true);
+    }
+  };
+
+  return (
+    <div 
+      className="min-h-screen w-full py-8 px-4 bg-cover bg-center"
+      style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url("/api/placeholder/1200/800")`
+      }}
+    >
+      <div className="max-w-4xl mx-auto">
+        {/* Title Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+            The Digestive System Quiz
+          </h1>
+          <p className="text-lg text-gray-600 font-serif italic">Test your knowledge!</p>
+        </div>
+
+        {/* Questions Section */}
+        <div className="space-y-8">
+          {questions.map((q, idx) => (
+            <Card key={idx} className="p-6 shadow-lg bg-white/90 backdrop-blur-sm">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center font-serif">
+                Question {idx + 1}: {q.question}
+              </h2>
+              <div className="space-y-3">
+                {q.options.map((option, optIdx) => (
+                  <button
+                    key={optIdx}
+                    onClick={() => handleOptionSelect(idx, option)}
+                    disabled={isAnswered[idx]}
+                    className={`w-full flex items-center p-4 rounded-lg transition-colors ${
+                      selectedAnswers[idx] === option 
+                        ? showScore
+                          ? option === q.correctAnswer
+                            ? 'bg-green-100 border-2 border-green-500'
+                            : 'bg-red-100 border-2 border-red-500'
+                          : 'bg-blue-100 border-2 border-blue-500'
+                        : 'hover:bg-gray-50 border-2 border-transparent'
+                    }`}
+                  >
+                    <span className="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 mr-3">
+                      {String.fromCharCode(65 + optIdx)}
+                    </span>
+                    <p className="text-gray-700 text-left flex-grow">{option}</p>
+                    {showScore && option === q.correctAnswer && (
+                      <Check className="w-5 h-5 text-green-500 ml-2" />
+                    )}
+                    {showScore && selectedAnswers[idx] === option && option !== q.correctAnswer && (
+                      <X className="w-5 h-5 text-red-500 ml-2" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Submit Button and Score */}
+        <div className="mt-8 text-center">
+          {!showScore && (
+            <button
+              onClick={handleSubmit}
+              disabled={Object.keys(selectedAnswers).length !== questions.length}
+              className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              Submit Quiz
+            </button>
+          )}
+          
+          {showScore && (
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-2xl font-bold mb-2">Quiz Complete!</h2>
+              <p className="text-xl">
+                Your Score: <span className="font-bold text-blue-600">{calculateScore()}</span> out of {questions.length}
+              </p>
+              <p className="mt-2 text-gray-600">
+                Percentage: {((calculateScore() / questions.length) * 100).toFixed(1)}%
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const questions = [
+  {
+    question: "What is the length of the small intestine?",
+    options: [
+      "2 meters",
+      "5 meters",
+      "7 meters",
+      "10 meters"
+    ],
+    correctAnswer: "5 meters"
+  },
+  {
+    question: "How many phases are there in gastric juice secretion?",
+    options: [
+      "Two phases",
+      "Three phases",
+      "Four phases",
+      "Five phases"
+    ],
+    correctAnswer: "Three phases"
+  },
+  {
+    question: "What is the daily secretion amount of gastric juice?",
+    options: [
+      "1 litre",
+      "2 litres",
+      "3 litres",
+      "4 litres"
+    ],
+    correctAnswer: "2 litres"
+  },
+  {
+    question: "Which part of the digestive system is known as the J-shaped dilated portion?",
+    options: [
+      "Esophagus",
+      "Stomach",
+      "Small intestine",
+      "Large intestine"
+    ],
+    correctAnswer: "Stomach"
+  },
+  {
+    question: "What is the approximate weight of the liver?",
+    options: [
+      "0.5-1 kg",
+      "1-2.3 kg",
+      "2.5-3 kg",
+      "3.5-4 kg"
+    ],
+    correctAnswer: "1-2.3 kg"
+  },
+  {
+    question: "How many main pairs of salivary glands are there?",
+    options: [
+      "Two pairs",
+      "Three pairs",
+      "Four pairs",
+      "Five pairs"
+    ],
+    correctAnswer: "Three pairs"
+  },
+  {
+    question: "What is the length of the large intestine?",
+    options: [
+      "1 metre",
+      "1.5 metres",
+      "2 metres",
+      "2.5 metres"
+    ],
+    correctAnswer: "1.5 metres"
+  },
+  {
+    question: "Which of the following is NOT a part of the small intestine?",
+    options: [
+      "Duodenum",
+      "Jejunum",
+      "Ileum",
+      "Cecum"
+    ],
+    correctAnswer: "Cecum"
+  },
+  {
+    question: "What is the approximate weight of the pancreas?",
+    options: [
+      "40 grams",
+      "50 grams",
+      "60 grams",
+      "70 grams"
+    ],
+    correctAnswer: "60 grams"
+  },
+  {
+    question: "Which valve controls the flow of material from the ileum to the caecum?",
+    options: [
+      "Pyloric valve",
+      "Cardiac valve",
+      "Ileocaecal valve",
+      "Hepatic valve"
+    ],
+    correctAnswer: "Ileocaecal valve"
+  }
+];
+
+export default InteractiveQuiz;
